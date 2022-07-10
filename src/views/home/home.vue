@@ -1,28 +1,13 @@
 <template>
-  <!--  <div id="home">-->
-  <!--    &lt;!&ndash;  导航栏  &ndash;&gt;-->
-  <!--    <navbar class="home-nav">-->
-  <!--      <div slot="center">购物街</div>-->
-  <!--    </navbar>-->
-  <!--    &lt;!&ndash;    轮播图&ndash;&gt;-->
-  <!--    <home-swiper :banners="banners" class="home-swiper"/>-->
-  <!--    &lt;!&ndash;    推荐视图&ndash;&gt;-->
-  <!--    <HomeRecommend :recommend="recommend"/>-->
-  <!--    &lt;!&ndash;    特征视图&ndash;&gt;-->
-  <!--    <home-feature/>-->
-  <!--    &lt;!&ndash;    切换按钮&ndash;&gt;-->
-  <!--    <tab-control :titles="titles" class="tab-control" @tabClick="requestKindData"/>-->
-  <!--    <goods :goods="goods[kind].list" ref="goods" :class="{showgoods:isShow}" :style="{height: height+'px'}"></goods>-->
-  <!--  </div>-->
-
   <div id="home">
     <!--  导航栏  -->
     <navbar class="home-nav">
       <div slot="center">购物街</div>
     </navbar>
-    <!--    切换按钮-->
+    <!--    切换按钮 (伪)-->
     <tab-control :titles="titles" class="tab-control" @tabClick="requestKindData"
                  v-show="isTabFixed" ref="tabControl2"/>
+    <!--    滑动组件-->
     <scroll class="content" ref="scroll" :probe-type="3"
             :pull-up-load="true"
             @scroll="contentScroll"
@@ -34,9 +19,11 @@
       <HomeRecommend :recommend="recommend" v-if="recommend !== '' "/>
       <!--    特征视图-->
       <home-feature/>
+      <!--      切换按钮-->
       <tab-control :titles="titles" class="tab-control" @tabClick="requestKindData" ref="tabControl1"
                    v-show="!isTabFixed"
       />
+      <!--      商品视图-->
       <goods :goods="goods[kind].list" ref="goods" v-if="goods[kind].list !=='' " class="goods"
       ></goods>
 
@@ -77,26 +64,26 @@ export default {
   },
   data() {
     return {
-      banners: [],//轮播图
-      recommend: [],//推荐视图
-      titles: ['流行', '新款', '精选'],//切换按钮
+      banners: [],//轮播图数据
+      recommend: [],//推荐视图数据
+      titles: ['流行', '新款', '精选'],//切换按钮标题
+      //商品数据
       goods: {
         'pop': {page: 0, list: []},
         'new': {page: 0, list: []},
         'sell': {page: 0, list: []}
       },
-      kind: 'pop',
-      backIsShow: false,
-      detailIndex: 0,
-      tabControlOffsetTop: 0,
-      isTabFixed: false,
-      detailCurrentIndex: 0,
-      saveY: 0
+      kind: 'pop',//当前展示的商品类型
+      backIsShow: false,//返回按钮是否显示
+      detailIndex: 0,//禁止用户多次点击同一个类别按钮
+      tabControlOffsetTop: 0,//类型悬浮按钮的位置
+      isTabFixed: false,//类型悬浮按钮是显示
+      detailCurrentIndex: 0,//当前展示的商品类型下标
+      saveY: 0//组件离开时候的容器位置
     }
   },
 
   created() {
-    this.isShow = true
     //1.请求首页数据
     getHomeMultidata().then(res => {
       this.banners = res.data.data.banner.list
@@ -109,7 +96,6 @@ export default {
     this.getHomeGoodsHandle("new")
     this.getHomeGoodsHandle("sell")
 
-
   },
 
   methods: {
@@ -119,19 +105,20 @@ export default {
       getHomeGoods(type, page).then(res => {
         //随机排序
         let arr = this.shuffle(res)
+        //判断是替换数据还是增加数据 按钮为替换 上拉为增加
         if (replace === "replace") {
           this.goods[type].list.push(...arr)
         } else {
           this.goods[type].list.push(...arr)
           this.goods[type].page += 1
         }
-
       }).catch(err => {
         console.log(err)
       })
     },
     //分类切换按钮
     requestKindData(index) {
+      //判断当前是否同一个按钮
       if (this.detailIndex !== index) {
         switch (index) {
           case 0 :
@@ -148,17 +135,18 @@ export default {
     },
     //切换按钮
     currentDetail(index, type) {
-      this.getHomeGoodsHandle(type, "replace")
-      this.goods[type].list.splice(0, this.goods[type].list.length)
-      this.kind = type;
-      this.$refs.scroll.scrollTo(0, -this.tabControlOffsetTop)
-      this.detailIndex = index
-      this.$refs.scroll.refresh()
-      this.$refs.tabControl1.currentIndex = index
-      this.$refs.tabControl2.currentIndex = index
+      this.getHomeGoodsHandle(type, "replace")//带参数过去 本次为替换数据
+      this.goods[type].list.splice(0, this.goods[type].list.length)//删除当前所有数据
+      this.kind = type;//更改数据类别
+      this.$refs.scroll.scrollTo(0, -this.tabControlOffsetTop, 500)//将容器置位正确位置
+      this.detailIndex = index//保留当前类别的下标
+      this.$refs.scroll.refresh()//数据已经渲染到 开始重新刷新容器高度
+      this.$refs.tabControl1.currentIndex = index//更新正确的类别按钮
+      this.$refs.tabControl2.currentIndex = index//此处也更新 此处是伪类 类别按钮
     },
 
     //将数据随机一下 防止每次拿到的数据展示时候都是一样的
+    //洗牌函数
     shuffle(arr) {
       let arrLength = arr.length
       let randomIndex = null
@@ -186,37 +174,34 @@ export default {
       //2.吸顶效果是否触发
       this.isTabFixed = (-position.y) > this.tabControlOffsetTop
 
-
     },
 
-    //加载更多
+    //下拉加载更多
     pullingUp() {
       this.getHomeGoodsHandle(this.kind)
     },
-
-    //监听tabControl监听是否加载完毕
+    //由于图片是异步加载 当图片未加载完成时候 直接获取tabControl位置时候会有问题 此处是图片加载完毕的回调函数
     swiperImgLoadSuccess() {
       this.tabControlOffsetTop = this.$refs.tabControl1.$el.offsetTop
-      this.detailTop = this.$refs.tabControl1.$el.offsetTop
-      console.log(this.tabControlOffsetTop)
     }
-
   },
   mounted() {
-    //监听goods组件中图片是否加载完毕
+    //监听goods组件中图片是否加载完毕 加载完毕重新计算高度
+    //此处节流 防止重读调用 浪费性能
     const refresh = debounce(this.$refs.scroll.refresh, 300)
     this.$bus.$on("itemImageLoad", () => {
-      refresh()
+      refresh() //计算容器滑动高度
     })
-
   },
-
+  //组件进来时候计算高度 并且将容器置位上次组件离开时候的位置
   activated() {
-    this.$refs.scroll.scrollTo(0, -this.saveY)
     this.$refs.scroll.refresh()
+    this.$refs.scroll.scrollTo(0, -this.saveY, 0)
   },
+  //保留组件离开时 容器的位置
   deactivated() {
     this.saveY = -this.$refs.scroll.scroll.y  //当前容器的Y轴位置
+    this.$bus.$off
   }
 }
 </script>

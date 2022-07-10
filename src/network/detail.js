@@ -1,4 +1,4 @@
-import {request1} from "@/network/request";
+import {request, request1} from "@/network/request";
 
 export function getDetail(iid) {
   return request1({
@@ -34,4 +34,23 @@ export class shop {
     this.score = showInfo.score
     this.goodsCount = showInfo.cGoods
   }
+}
+
+export class goodsParam {
+  constructor(info, rule) {
+    this.image = info.images ? info.images[0] : ''
+    this.infos = info.set
+    this.sizes = rule.tables
+  }
+}
+
+export function getHomeGoods(type, page) {
+  return request({
+    method: "get",
+    url: `home/data`,
+    params: {
+      type,
+      page
+    }
+  })
 }

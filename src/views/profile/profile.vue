@@ -1,7 +1,9 @@
 <template>
   <div>
-    我是个人
+    <p>我是个人</p>
+    <p>页面开发中</p>
   </div>
+
 </template>
 
 <script>

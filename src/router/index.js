@@ -25,7 +25,8 @@ const routes = [
     component: () => import("@/views/profile/profile")
   },
   {
-    path: "/detail/:iid",
+    // path: "/detail/:iid",
+    path: "/detail",
     component: () => import("@/detail/detail")
   }
 ]

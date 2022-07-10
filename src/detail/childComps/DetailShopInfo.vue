@@ -1,5 +1,5 @@
 <template>
-  <div class="shopInfo">
+  <div class="shopInfo" v-if="Object.keys(shopInfo).length !== 0">
     <div class="name">
       <img :src="shopInfo.logo" alt="">
       <div>{{ shopInfo.name }}</div>
@@ -17,10 +17,10 @@
         </div>
       </div>
       <div class="right">
-        <div v-for="item in shopInfo.score" class="score">
+        <div v-for="(item,index) in shopInfo.score" class="score" :key="index">
           <div class="score-left">
             <p class="score-name">{{ item.name }}</p>
-            <p class="score-score">{{ item.score }}</p>
+            <p class="score-score" :class="{levelColor:item.isBetter}">{{ item.score }}</p>
           </div>
           <div class="level">
             <p :class="{levelHigh:item.isBetter}">
@@ -28,11 +28,9 @@
             </p>
           </div>
         </div>
-        <div>
-
-        </div>
       </div>
     </div>
+    <div class="goShop">进店逛逛</div>
   </div>
 </template>
 
@@ -62,6 +60,7 @@ export default {
 .shopInfo {
   padding: 0 6px;
   border-top: 2px solid whitesmoke;
+  border-bottom: 2px solid whitesmoke;
 }
 
 .name {
@@ -105,10 +104,6 @@ export default {
   flex: 1;
 }
 
-.sell {
-
-}
-
 .level {
   color: white;
   flex: 1;
@@ -120,9 +115,11 @@ export default {
 
 .level > p {
   background-color: rgba(7, 163, 7);
+  padding: 0 3px;
 }
 
 .score {
+
   display: flex;
   margin-left: 40px;
   /*justify-content: space-evenly;*/
@@ -138,7 +135,8 @@ export default {
 }
 
 .score-score {
-  font-size: 13px;
+  color: rgba(7, 163, 7);
+  font-size: 12px;
   margin-left: 8px;
 }
 
@@ -156,4 +154,19 @@ export default {
   background: var(--color-tint) !important;
 }
 
+.levelColor {
+  color: #ff5777;
+}
+
+.goShop {
+  width: 100px;
+  padding: 4px 0;
+  display: flex;
+  margin: 10px auto;
+  justify-content: center;
+  background: rgba(242, 245, 252);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--color-text);
+}
 </style>
