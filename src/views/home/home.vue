@@ -47,6 +47,7 @@ import homeFeature from "@/views/home/childComps/homeFeature";
 //工具函数
 import {getHomeMultidata, getHomeGoods} from "@/network/home";
 import debounce from "@/tool/debounce";
+import {backTopMixin} from "@/mixin/mixin";
 
 export default {
   name: "home",
@@ -55,13 +56,13 @@ export default {
     tabControl,
     goods,
     scroll,
-    backTop,
 
     homeSwiper,
     HomeRecommend,
     homeFeature,
 
   },
+  mixins: [backTopMixin],
   data() {
     return {
       banners: [],//轮播图数据
@@ -74,7 +75,6 @@ export default {
         'sell': {page: 0, list: []}
       },
       kind: 'pop',//当前展示的商品类型
-      backIsShow: false,//返回按钮是否显示
       detailIndex: 0,//禁止用户多次点击同一个类别按钮
       tabControlOffsetTop: 0,//类型悬浮按钮的位置
       isTabFixed: false,//类型悬浮按钮是显示
@@ -161,10 +161,6 @@ export default {
       return arr
     },
 
-    //回到顶部
-    backTop() {
-      this.$refs.scroll.scrollTo(0, 0, 600)
-    },
 
     //返回按钮隐藏显示
     contentScroll(position) {
@@ -201,7 +197,6 @@ export default {
   //保留组件离开时 容器的位置
   deactivated() {
     this.saveY = -this.$refs.scroll.scroll.y  //当前容器的Y轴位置
-    this.$bus.$off
   }
 }
 </script>
