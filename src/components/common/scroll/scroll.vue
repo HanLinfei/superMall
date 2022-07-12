@@ -38,7 +38,7 @@ export default {
       probeType: this.probeType,
       pullUpLoad: {
         type: this.pullUpLoad,
-        threshold: 4000 //距离底部4000时候就触发上拉事件 多加载一个content
+        threshold: 1000 //距离底部1000时候就触发上拉事件
       },
       useTransition: false,//移动端禁用css3动画 防止卡顿
     })

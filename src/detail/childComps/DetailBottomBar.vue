@@ -15,15 +15,23 @@
       </div>
     </div>
     <div class="right">
-      <div>加入购物车</div>
+      <div @click="addToCart" class="addCart">
+        <p>加入购物车 <span>({{ $store.getters.cartLength }})</span></p>
+      </div>
       <div>购买</div>
+
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: "DetailBottomBar"
+  name: "DetailBottomBar",
+  methods: {
+    addToCart() {
+      this.$emit("addCart")
+    }
+  }
 }
 </script>
 
@@ -70,7 +78,7 @@ export default {
   background-size: 70%;
   background-repeat: no-repeat;
   width: 60%;
-  background-position: 7px -68px;
+  background-position: 7px -63px;
 }
 
 .left > div:nth-child(2) > span {
@@ -79,7 +87,7 @@ export default {
   background-size: 70%;
   background-repeat: no-repeat;
   width: 60%;
-  background-position: 7px -128px;
+  background-position: 7px -120px;
 }
 
 .left > div:nth-child(3) > span {
@@ -105,10 +113,14 @@ export default {
 .right > div:nth-child(1) {
   color: #ffffff;
   background: rgba(255, 221, 17);
+  flex: 2;
 }
 
 .right > div:nth-child(2) {
   background: #ff5777;
   color: #ffffff;
+
 }
+
+
 </style>

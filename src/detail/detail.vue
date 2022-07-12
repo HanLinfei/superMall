@@ -1,7 +1,7 @@
 <template>
   <div class="detail">
-    <detail-nav-bar class="detail-nav" @titleClick="titleClick"/>
-    <scroll class="content" :pull-up-load="true" ref="scroll">
+    <detail-nav-bar class="detail-nav" @titleClick="titleClick" ref="detailNav"/>
+    <scroll class="content" :pull-up-load="true" ref="scroll" :probe-type="3" @scroll="contentScroll">
       <detail-swiper :swiperImgs="swiperImgs"/>
       <detail-goods :goods="goodsInfo"/>
       <detail-shop-info :shopInfo="shopInfo"/>
@@ -10,7 +10,9 @@
       <detail-comment :userComments="userComments" ref="comment"/>
       <goods :goods="goods" @imgLoad="SuccessRenderImg" class="goods" ref="goods"/>
     </scroll>
-    <detail-bottom-bar/>
+    <back-top @click.native="backTop" v-show="backIsShow"/>
+    <detail-bottom-bar @addCart="addCart"/>
+    <!--    <toast :message="message" :show="show"/>-->
   </div>
 </template>
 
@@ -30,6 +32,12 @@ import {getDetail, shop, goodsInfo, goodsParam, getHomeGoods} from "@/network/de
 
 //工具组件
 import scroll from "@/components/common/scroll/scroll";
+import {backTopMixin} from "@/mixin/mixin"
+
+import {mapActions} from "vuex"
+
+
+import Toast from "@/components/common/toast";
 
 export default {
   name: "detail",
@@ -43,7 +51,8 @@ export default {
     detailComment,
     goods,
     detailBottomBar,
-    scroll
+    scroll,
+    Toast
   },
   data() {
     return {
@@ -56,9 +65,13 @@ export default {
       userComments: {},
       goods: [],
       imgRenderCount: 0,
-      themeTopY: []
+      themeTopY: [],
+      currentIndex: 0,
+      // message: '',
+      // show: false
     }
   },
+  mixins: [backTopMixin],
   created() {
     //获得当前活跃路由的IID
     this.iid = this.$route.query.iid
@@ -68,6 +81,7 @@ export default {
 
     //请求推荐商品
     this.getRecommendGoods()
+    console.log('哈哈哈')
 
   },
   //监听query变化 然后进行刷新跳转页面
@@ -82,7 +96,6 @@ export default {
     //响应详情页数据
     responseDetail(iid) {
       getDetail(iid).then(({data: {result}}) => {
-        console.log(result)
         //轮播图信息
         this.swiperImgs.push(...result.itemInfo.topImages)
         //商品基本信息
@@ -141,15 +154,67 @@ export default {
           this.themeTopY.push(this.$refs.comment.$el.offsetTop - 44)
           this.themeTopY.push(this.$refs.goods.$el.offsetTop - 44)
           this.imgRenderCount = 0
-          // console.log('全部加载完毕')
+          console.log('全部加载完毕')
         })
       }
     },
 
-
+    //监听标题单击跳转
     titleClick(index) {
       console.log(index)
       this.$refs.scroll.scrollTo(0, -this.themeTopY[index], 300)
+    },
+    //监听当前容易的位置
+    contentScroll(position) {
+      //返回顶部按钮是否显示
+      this.backIsShow = (-position.y) > 1000
+
+      const positionY = -position.y
+      let length = this.themeTopY.length
+      for (let i in this.themeTopY) {
+        i = i *= 1
+        if (this.currentIndex !== i && (i < length - 1 && positionY >= this.themeTopY[i] && positionY <= this.themeTopY[i + 1])
+          || (i === length - 1 && positionY >= this.themeTopY[i])) {
+          this.currentIndex = i
+          this.$refs.detailNav.currentIndex = this.currentIndex
+        }
+      }
+    },
+
+
+    //actions映射
+    ...mapActions(['addCartList']),
+
+    addCart() {
+      //获取商品需要展示的信息
+      const product = {}
+      product.image = this.swiperImgs[0]
+      product.title = this.goodsInfo.title
+      product.desc = this.detailInfo.desc
+      product.price = this.goodsInfo.realPrice
+      product.iid = this.iid
+      product.count = 0
+      product.checked = false
+      console.log(product)
+      //隐射调用
+      this.addCartList(product).then(res => {
+        console.log(res)
+
+        this.$toast.show(res, 2000)
+        // this.message = res
+        // this.show = true
+        //
+        //
+        // setTimeout(() => {
+        //   this.show = false
+        //   this.message = ''
+        // }, 1500)
+      })
+      // this.$store.dispatch('addCartList', product).then(res => {
+      //   console.log(res)
+      // })
+
+
     }
   },
 
