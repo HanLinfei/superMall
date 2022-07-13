@@ -45,8 +45,10 @@ export default {
         this.$nextTick(() => {
           if (this.$route.path.indexOf("/home") !== -1) {
             this.$bus.$emit('itemImageLoad') //高度得到后发送事件 计算容器滑动高度
-          } else {
+          } else if (this.$route.path.indexOf("/detail") !== -1) {
             this.$emit("imgLoad")//计算高度
+          } else {
+            this.$emit("imgLoad")
           }
         })
       })

@@ -22,12 +22,16 @@ const routes = [
   },
   {
     path: "/profile",
-    component: () => import("@/views/profile/profile")
+    component: () => import("@/views/profile/profile"),
   },
   {
     // path: "/detail/:iid",
     path: "/detail",
     component: () => import("@/detail/detail")
+  },
+  {
+    path: "/bought",
+    component: () => import("@/views/profile/boughtGoods"),
   }
 ]
 

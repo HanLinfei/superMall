@@ -1,7 +1,7 @@
-import {request, request1} from "@/network/request";
+import {requestRule, request} from "@/network/request";
 
 export function getDetail(iid) {
-  return request1({
+  return request({
     url: "/detail",
     params: {
       iid,
@@ -45,7 +45,7 @@ export class goodsParam {
 }
 
 export function getHomeGoods(type, page) {
-  return request({
+  return requestRule({
     method: "get",
     url: `home/data`,
     params: {

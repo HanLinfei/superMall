@@ -87,7 +87,7 @@ export default {
   background-size: 70%;
   background-repeat: no-repeat;
   width: 60%;
-  background-position: 7px -120px;
+  background-position: 7px -116px;
 }
 
 .left > div:nth-child(3) > span {

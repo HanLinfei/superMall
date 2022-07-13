@@ -16,7 +16,7 @@
 
 <script>
 import checked from "@/components/common/checkBox/checked";
-import {mapGetters} from "vuex";
+import {mapGetters, mapActions} from "vuex";
 
 export default {
   name: "cartBottomBar",
@@ -24,12 +24,8 @@ export default {
     checked
   },
   computed: {
-    ...mapGetters(['cartLength', 'cartList', 'cartBuyLength']),
-    totalPrice() {
-      return this.cartList.filter(item => item.checked).reduce((total, item) => {
-        return total += item.price * item.count
-      }, 0).toFixed(2)
-    },
+    ...mapGetters(['cartLength', 'cartList', 'cartBuyLength', 'totalPrice', 'moneyBalance']),
+
     isSelectAll() {
       if (this.cartBuyLength === 0)
         return false
@@ -37,6 +33,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['Buy']),
     Allchecked() {
       if (this.isSelectAll) {
         this.cartList.forEach(item => item.checked = false)
@@ -47,6 +44,14 @@ export default {
     buyClick() {
       if (!(this.cartList.some(item => item.checked))) {
         this.$toast.show("请选择要购买的商品", 2000)
+      } else if (this.$store.state.User.length) {
+        this.Buy().then(res => {
+          this.$toast.show(res, 2000)
+        }).catch(err => {
+          this.$toast.show(err, 2000)
+        })
+      } else {
+        this.$toast.show("没有账号请先进入'我的'界面")
       }
     }
   }

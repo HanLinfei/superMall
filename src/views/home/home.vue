@@ -175,6 +175,7 @@ export default {
     //下拉加载更多
     pullingUp() {
       this.getHomeGoodsHandle(this.kind)
+      this.$refs.scroll.refresh()
     },
     //由于图片是异步加载 当图片未加载完成时候 直接获取tabControl位置时候会有问题 此处是图片加载完毕的回调函数
     swiperImgLoadSuccess() {

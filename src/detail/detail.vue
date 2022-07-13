@@ -11,7 +11,7 @@
       <goods :goods="goods" @imgLoad="SuccessRenderImg" class="goods" ref="goods"/>
     </scroll>
     <back-top @click.native="backTop" v-show="backIsShow"/>
-    <detail-bottom-bar @addCart="addCart"/>
+    <detail-bottom-bar @addCart="addCart" class="bottom-bar"/>
     <!--    <toast :message="message" :show="show"/>-->
   </div>
 </template>
@@ -237,9 +237,14 @@ export default {
 
 .content {
   height: calc(100% - 44px - 49px);
+  overflow: hidden;
 }
 
 .goods {
   margin-top: 10px;
+}
+
+.bottom-bar {
+  /*position: relative;*/
 }
 </style>

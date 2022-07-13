@@ -1,13 +1,15 @@
 <template>
   <div class="cart">
     <navbar class="nav-bar">
-      <div slot="center">购物车 <span v-if="cartLength">({{ cartLength }})</span></div>
+      <div slot="left" @click="backClick">
+        <img src="@/assets/img/common/back.svg" alt="" class="back">
+      </div>
+      <div slot="center">已购商品 <span v-if="boughtGoodsLength">({{ boughtGoodsLength }})</span></div>
     </navbar>
-    <div v-if="!cartLength" style="position: absolute">购物车空空如也~</div>
+    <div v-if="!boughtGoodsLength" style="position: absolute">还没有买过东西，快去看看吧~</div>
     <scroll class="content" ref="scroll">
-      <cart-list class="cart-list" v-for="(item,index) in cartList" :key="index" :product="item"/>
+      <cart-list class="cart-list" v-for="(item,index) in boughtList" :key="index" :product="item"/>
     </scroll>
-    <cart-bottom-bar/>
   </div>
 </template>
 
@@ -27,12 +29,16 @@ export default {
     cartBottomBar
   },
   computed: {
-    ...mapGetters(['cartLength', 'cartList', 'totalPrice'])
+    ...mapGetters(['cartLength', 'boughtList', 'totalPrice', 'boughtGoodsLength'])
   },
   activated() {
     this.$refs.scroll.refresh()
   },
-
+  methods: {
+    backClick() {
+      this.$router.back()
+    }
+  }
 }
 </script>
 
@@ -50,5 +56,9 @@ export default {
 
 .content {
   height: calc(100% - 44px - 49px - 40px);
+}
+
+.back {
+  vertical-align: bottom;
 }
 </style>

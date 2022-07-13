@@ -1,10 +1,10 @@
-import {request, request1} from "@/network/request";
+import {requestRule, request} from "@/network/request";
 
 //首页数据请求
 
 //请求轮播图和推荐
 export function getHomeMultidata() {
-  return request1({
+  return request({
     method: "get",
     url: "home/multidata"
   })
@@ -12,7 +12,7 @@ export function getHomeMultidata() {
 
 //请求商品
 export function getHomeGoods(type, page) {
-  return request({
+  return requestRule({
     method: "get",
     url: `home/data`,
     params: {

@@ -13,4 +13,18 @@ export default {
   //
   //
   // }
+
+  addUser(state, payload) {
+    state.User.push(payload)
+    sessionStorage.setItem("user", JSON.stringify(state.User));//保存至本地浏览器缓存
+  },
+  addMoney(state, money) {
+    state.User[0].money = money
+    sessionStorage.setItem("user", JSON.stringify(state.User));//保存至本地浏览器缓存
+  },
+  subMoney(state, money) {
+    state.User[0].money = money
+    sessionStorage.setItem("user", JSON.stringify(state.User));//保存至本地浏览器缓存
+  },
+
 }

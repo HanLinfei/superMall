@@ -1,6 +1,6 @@
 <template>
-  <div class="cart-list" v-if="product">
-    <div class="list-item">
+  <div class="cart-list">
+    <div class="list-item" v-if="product">
       <checked class="checkbox" @click.native="checkClick" :is-checked="product.checked"/>
       <div class="img">
         <img :src="product.image" alt="">
